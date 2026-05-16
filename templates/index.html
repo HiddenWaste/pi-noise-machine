@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pi Noise Machine</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #e0e0e0;
+        }
+        .control-btn {
+            background-color: #1db954; /* Clean Spotify-style Green */
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4);
+            transition: all 0.2s ease-in-out;
+            min-width: 200px;
+        }
+        .control-btn:active {
+            transform: scale(0.96);
+        }
+        .control-btn.stopped {
+            background-color: #e91429; /* Red */
+            box-shadow: 0 4px 15px rgba(233, 20, 41, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Ambient Noise Controller</h1>
+        <button id="toggleBtn" class="control-btn">START</button>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleBtn');
+        
+        toggleBtn.addEventListener('click', async () => {
+            try {
+                // Send background request to our Flask backend route
+                const response = await fetch('/toggle', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Adapt the UI based on what the backend confirms is happening
+                    if (data.isPlaying) {
+                        toggleBtn.textContent = 'STOP';
+                        toggleBtn.classList.add('stopped');
+                    } else {
+                        toggleBtn.textContent = 'START';
+                        toggleBtn.classList.remove('stopped');
+                    }
+                }
+            } catch (error) {
+                console.error("Error communicating with backend web server:", error);
+            }
+        });
+    </script>
+</body>
+</html>
